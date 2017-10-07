@@ -1,0 +1,21 @@
+#ifndef SETTING_H
+#define SETTING_H
+
+
+class Setting
+{
+public:
+    Setting();
+    void updateFolder(const QString& newValue);
+    void updateExifTool(const QString& newValue);
+    bool areSettingsDirty();
+    bool saveSettings();
+    bool loadSettings();
+private:
+    QSettings settings("LabZ", "GPS-Coordinates-to-Pictures");
+    QString folder, folder0;
+    QString exifTool, exiftool0;
+   
+};
+
+#endif // SETTING_H
