@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>280</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>500</width>
-    <height>280</height>
+    <height>300</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>500</width>
-    <height>280</height>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -33,7 +33,7 @@
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>210</y>
+      <y>230</y>
       <width>80</width>
       <height>26</height>
      </rect>
@@ -48,11 +48,11 @@
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="pushButtonQuit">
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>210</y>
+      <y>230</y>
       <width>80</width>
       <height>26</height>
      </rect>
@@ -65,7 +65,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>20</y>
+      <y>10</y>
       <width>321</width>
       <height>26</height>
      </rect>
@@ -75,7 +75,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>20</y>
+      <y>10</y>
       <width>101</width>
       <height>18</height>
      </rect>
@@ -88,7 +88,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>50</y>
+      <y>80</y>
       <width>111</width>
       <height>18</height>
      </rect>
@@ -101,10 +101,13 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>50</y>
+      <y>80</y>
       <width>321</width>
       <height>26</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>sexagesimal/decimal longitude latitude [altitude]</string>
     </property>
     <property name="styleSheet">
      <string notr="true">QLineEdit {background-color: rgb(254, 220, 220);}</string>
@@ -123,7 +126,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
+      <y>150</y>
       <width>71</width>
       <height>18</height>
      </rect>
@@ -136,7 +139,7 @@
     <property name="geometry">
      <rect>
       <x>450</x>
-      <y>190</y>
+      <y>220</y>
       <width>41</width>
       <height>20</height>
      </rect>
@@ -149,20 +152,20 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>90</y>
+      <y>120</y>
       <width>111</width>
       <height>18</height>
      </rect>
     </property>
     <property name="text">
-     <string>Folder</string>
+     <string>Base folder</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="picturesFolder">
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>90</y>
+      <y>120</y>
       <width>281</width>
       <height>26</height>
      </rect>
@@ -175,7 +178,7 @@
     <property name="geometry">
      <rect>
       <x>440</x>
-      <y>90</y>
+      <y>120</y>
       <width>41</width>
       <height>20</height>
      </rect>
@@ -188,7 +191,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>120</y>
+      <y>150</y>
       <width>411</width>
       <height>70</height>
      </rect>
@@ -204,13 +207,74 @@
     <property name="geometry">
      <rect>
       <x>399</x>
-      <y>190</y>
+      <y>220</y>
       <width>51</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string>Clear</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>181</width>
+      <height>18</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Website for coordinates</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="coordinateWebsite">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>50</y>
+      <width>281</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Noto Sans</family>
+      <pointsize>9</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>https://www.daftlogic.com/sandbox-google-maps-find-altitude.htm</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushGotoWebsite">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>50</y>
+      <width>41</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Go</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkOverwrite">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>230</y>
+      <width>141</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>Avoids creating &quot;original&quot; backup file(s)</string>
+    </property>
+    <property name="text">
+     <string>Overwrite original</string>
     </property>
    </widget>
   </widget>
@@ -227,7 +291,7 @@
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>pushBtnGo</tabstop>
-  <tabstop>pushButton_2</tabstop>
+  <tabstop>pushButtonQuit</tabstop>
   <tabstop>pathToExiftool</tabstop>
   <tabstop>gpsCoodinates</tabstop>
   <tabstop>pushBtnFiles</tabstop>
