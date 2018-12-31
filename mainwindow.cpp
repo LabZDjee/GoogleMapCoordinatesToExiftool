@@ -95,13 +95,13 @@ void MainWindow::on_gpsCoodinates_textChanged(const QString &text)
     QRegExp rxSexagesimal("\\D*(\\d+) *° *(\\d+) *' *(\\d*(?:\\.\\d*)?) *\" *([nNsS])"
                           "\\D*(\\d+) *° *(\\d+) *' *(\\d*(?:\\.\\d*)?) *\" *([eEwW])"
                           "(?:[^0-9.-]+(-?\\d*(?:\\.\\d*)?))?\\D*$");
-    mLattitude = mLongitude = mAltitude = 1e99;
+    mLatitude = mLongitude = mAltitude = 1e99;
     if (rxSexagesimal.indexIn(text)>-1 /*&& capturedQRegsNotEmpty(rxSexagesimal)*/) {
-        mLattitude = rxSexagesimal.cap(1).toDouble();
-        mLattitude += rxSexagesimal.cap(2).toDouble() / 60.0;
-        mLattitude += rxSexagesimal.cap(3).toDouble() / 3600.0;
+        mLatitude = rxSexagesimal.cap(1).toDouble();
+        mLatitude += rxSexagesimal.cap(2).toDouble() / 60.0;
+        mLatitude += rxSexagesimal.cap(3).toDouble() / 3600.0;
         if(QString("sS").indexOf(rxSexagesimal.cap(4)[0])>-1)
-         mLattitude = -mLattitude;
+         mLatitude = -mLatitude;
         mLongitude = rxSexagesimal.cap(5).toDouble();
         mLongitude += rxSexagesimal.cap(6).toDouble() / 60.0;
         mLongitude += rxSexagesimal.cap(7).toDouble() / 3600.0;
@@ -112,7 +112,7 @@ void MainWindow::on_gpsCoodinates_textChanged(const QString &text)
          }
        }
     else if (rxDecimal.indexIn(text)>-1 && capturedQRegsNotEmpty(rxDecimal)) {
-      mLattitude = rxDecimal.cap(1).toDouble();
+      mLatitude = rxDecimal.cap(1).toDouble();
       mLongitude = rxDecimal.cap(2).toDouble();
       if(!rxDecimal.cap(3).isEmpty()) {
           mAltitude = rxDecimal.cap(3).toDouble();
@@ -120,7 +120,7 @@ void MainWindow::on_gpsCoodinates_textChanged(const QString &text)
      }
     if(coordinatesAreOkay()) {
         ui->gpsCoodinates->setStyleSheet("QLineEdit " + mcOkayStyle);
-        QString test = "" +  QString("%1").arg(mLattitude) + " ~ " + QString("%1").arg(mLongitude);
+        QString test = "" +  QString("%1").arg(mLatitude) + " ~ " + QString("%1").arg(mLongitude);
         if(altitudeIsOkay()) {
             test += QString(" %1m").arg(mAltitude);
         }
@@ -136,7 +136,7 @@ void MainWindow::on_gpsCoodinates_textChanged(const QString &text)
 
 bool MainWindow::coordinatesAreOkay() const
 {
-    return(mLattitude >= -360.0 && mLattitude<=360.0 &&
+    return(mLatitude >= -360.0 && mLatitude<=360.0 &&
            mLongitude >= -360.0 && mLongitude<=360.0);
 }
 
@@ -162,10 +162,10 @@ bool MainWindow::manageGoPushButton()
 void MainWindow::on_pushBtnGo_clicked()
 {
     QString app = ui->pathToExiftool->text();
-    QString command = QString("\"%1\" -GPSLatitude=%2 -GPSLatitudeRef=%3 -GPSLongitude=%4 -GPSLongitudeRef=%5")
+    QString command = QString("\"%1\" -m -GPSLatitude=%2 -GPSLatitudeRef=%3 -GPSLongitude=%4 -GPSLongitudeRef=%5")
             .arg(quoteQString(app))
-            .arg(abs(mLattitude))
-            .arg(mLattitude>=0 ? "N" : "S")
+            .arg(abs(mLatitude))
+            .arg(mLatitude>=0 ? "N" : "S")
             .arg(abs(mLongitude))
             .arg(mLongitude>=0 ? "E" : "W");
     if(altitudeIsOkay()) {
@@ -235,4 +235,56 @@ void MainWindow::on_checkOverwrite_stateChanged(int checked)
 {
     mOverwriteOriginal =  checked ? true : false;
     mSettings.updateOverwriteOriginal(mOverwriteOriginal);
+}
+
+void MainWindow::on_pushBtnGetCoordFromFile_clicked()
+{
+    QFileDialog dialog(this, tr("Get GPS Coord. from File"), mSettings.getFolder());
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setLabelText(QFileDialog::Accept, "Select");
+    dialog.setNameFilter(tr("Images (*.png *.xpm *.jpg *.PNG *.JPG *.XPM);;All (*)"));
+    if (dialog.exec()!=QDialog::Accepted || dialog.selectedFiles().length()<1)
+     return;
+    QString selectedFile = dialog.selectedFiles().first();
+    QString app = ui->pathToExiftool->text();
+    QString command = QString("%1 %2 -gps:gpslatitude -gps:gpslatituderef -gps:gpslongitude -gps:gpslongituderef -gps:gpsaltitude")
+            .arg(quoteQString(app))
+            .arg(quoteQString(selectedFile));
+    QProcess process;
+    process.start(command);
+    process.waitForFinished(-1); // will wait forever until finished
+    QString stdOut = process.readAllStandardOutput();
+    QRegExp rxLatitude("[Ll]atitude *:? *(\\d+) *deg *(\\d+) *' *(\\d*(?:\\.\\d*)?) *\".*((?:North)|(?:South))");
+    QString latitude="undefined";
+    if (rxLatitude.indexIn(stdOut)>-1) {
+        latitude = QString("%1°%2'%3\"%4")
+                .arg(rxLatitude.cap(1)).arg(rxLatitude.cap(2))
+                .arg(rxLatitude.cap(3)).arg(rxLatitude.cap(4)[0]);
+    }
+    QRegExp rxLongitude("[Ll]ongitude *:? *(\\d+) *deg *(\\d+) *' *(\\d*(?:\\.\\d*)?) *\".*((?:East)|(?:West))");
+    QString longitude="undefined";
+    if (rxLongitude.indexIn(stdOut)>-1) {
+        longitude = QString("%1°%2'%3\"%4")
+                .arg(rxLongitude.cap(1)).arg(rxLongitude.cap(2))
+                .arg(rxLongitude.cap(3)).arg(rxLongitude.cap(4)[0]);
+    }
+    QRegExp rxAltitude("[Aa]ltitude *:? *(\\d*(?:\\.\\d*)?) *m[\r\n]");
+    QString altitude = "undefined";
+    if (rxAltitude.indexIn(stdOut)>-1) {
+        altitude = QString("%1").arg(rxAltitude.cap(1));
+    }
+    if (latitude=="undefined" || longitude=="undefined") {
+        QMessageBox msgBox;
+        msgBox.setText(QString("Cannot find any coordinates in '%1'").arg(selectedFile));
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.exec();
+        ui->gpsCoodinates->setText("");
+        return;
+    }
+    QString coordinates;
+    coordinates = QString("%1, %2").arg(latitude).arg(longitude);
+    if(altitude != "undefined") {
+        coordinates += QString(", %1").arg(altitude);
+    }
+    ui->gpsCoodinates->setText(coordinates);
 }

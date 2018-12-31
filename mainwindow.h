@@ -47,10 +47,12 @@ private slots:
 
     void on_checkOverwrite_stateChanged(int arg1);
 
+    void on_pushBtnGetCoordFromFile_clicked();
+
 private:
     Ui::MainWindow *ui;
     Settings mSettings;
-    double mLattitude;
+    double mLatitude;
     double mLongitude;
     double mAltitude;
     bool mCoordinatesAreOkay;
